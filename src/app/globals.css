@@ -1,0 +1,324 @@
+@import "tailwindcss";
+
+/*
+  Khatm design tokens.
+
+  Ink on paper. The app is ballpoint blue-black on a cool desk; documents are
+  white A4. The only saturated colours are stamp inks, and each means one
+  thing: the business's seal is violet, "paid" is green ink, "overdue" is
+  red ink, "part-paid" is amber. Nothing else is allowed to be loud.
+*/
+@theme {
+  --font-sans: "Manrope Variable", "Noto Kufi Arabic Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-kufi: "Noto Kufi Arabic Variable", "Manrope Variable", sans-serif;
+
+  --color-paper: #ffffff;
+  --color-desk: #eceef3;
+  --color-well: #f5f6f9;
+  --color-ink: #171a2c;
+  --color-ink-2: #3e4359;
+  --color-muted: #5f6479;
+  --color-faint: #a0a4b5;
+  --color-rule: #d8dbe4;
+  --color-rule-2: #e7e9ef;
+
+  /* Stamp-pad violet: the business's seal, links, focus. */
+  --color-seal: #3d3a9e;
+  --color-seal-deep: #2c2a7a;
+  --color-seal-soft: #e8e7f6;
+  /* Chart marks: the same violet, light enough to read as colour (validated). */
+  --color-chart: #4b47b8;
+
+  /* Settlement inks. */
+  --color-paid: #12704d;
+  --color-paid-soft: #def0e7;
+  --color-late: #b3261e;
+  --color-late-soft: #fbe5e2;
+  --color-part: #95590a;
+  --color-part-soft: #f8ecd6;
+
+  --radius-sheet: 22px;
+  --radius-panel: 16px;
+  --radius-control: 10px;
+
+  --animate-rise: rise 480ms cubic-bezier(0.2, 0.9, 0.25, 1) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Colours are set per root layout (the 404 page has its own). */
+body {
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+:lang(ar) {
+  line-height: 1.75;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-seal);
+  outline-offset: 2px;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ----------------------------- the A4 document ----------------------------- */
+
+/* Real bilingual invoices don't mirror: English reads from the left edge, Arabic
+   from the right, whatever language the app around them is in. */
+.doc {
+  font-family: "Manrope Variable", "Noto Kufi Arabic Variable", sans-serif;
+  color: #14172a;
+  font-feature-settings: "tnum" 1;
+}
+.doc [lang="ar"] {
+  line-height: 1.6;
+}
+
+/* An A4 page zoomed to its column (see components/fit.tsx). These steps size
+   it before any script runs; the script then sets the exact --z. */
+[data-fit] {
+  container: fit / inline-size;
+}
+[data-fit-page] {
+  --z0: 0.3;
+  zoom: var(--z, var(--z0));
+}
+@container fit (min-width: 240px) {
+  [data-fit-page] {
+    --z0: 0.3023;
+  }
+}
+@container fit (min-width: 256px) {
+  [data-fit-page] {
+    --z0: 0.3224;
+  }
+}
+@container fit (min-width: 272px) {
+  [data-fit-page] {
+    --z0: 0.3426;
+  }
+}
+@container fit (min-width: 288px) {
+  [data-fit-page] {
+    --z0: 0.3627;
+  }
+}
+@container fit (min-width: 304px) {
+  [data-fit-page] {
+    --z0: 0.3829;
+  }
+}
+@container fit (min-width: 320px) {
+  [data-fit-page] {
+    --z0: 0.403;
+  }
+}
+@container fit (min-width: 336px) {
+  [data-fit-page] {
+    --z0: 0.4232;
+  }
+}
+@container fit (min-width: 352px) {
+  [data-fit-page] {
+    --z0: 0.4433;
+  }
+}
+@container fit (min-width: 368px) {
+  [data-fit-page] {
+    --z0: 0.4635;
+  }
+}
+@container fit (min-width: 384px) {
+  [data-fit-page] {
+    --z0: 0.4836;
+  }
+}
+@container fit (min-width: 400px) {
+  [data-fit-page] {
+    --z0: 0.5038;
+  }
+}
+@container fit (min-width: 416px) {
+  [data-fit-page] {
+    --z0: 0.5239;
+  }
+}
+@container fit (min-width: 432px) {
+  [data-fit-page] {
+    --z0: 0.5441;
+  }
+}
+@container fit (min-width: 448px) {
+  [data-fit-page] {
+    --z0: 0.5642;
+  }
+}
+@container fit (min-width: 464px) {
+  [data-fit-page] {
+    --z0: 0.5844;
+  }
+}
+@container fit (min-width: 480px) {
+  [data-fit-page] {
+    --z0: 0.6045;
+  }
+}
+@container fit (min-width: 496px) {
+  [data-fit-page] {
+    --z0: 0.6247;
+  }
+}
+@container fit (min-width: 512px) {
+  [data-fit-page] {
+    --z0: 0.6448;
+  }
+}
+@container fit (min-width: 528px) {
+  [data-fit-page] {
+    --z0: 0.665;
+  }
+}
+@container fit (min-width: 544px) {
+  [data-fit-page] {
+    --z0: 0.6851;
+  }
+}
+@container fit (min-width: 560px) {
+  [data-fit-page] {
+    --z0: 0.7053;
+  }
+}
+@container fit (min-width: 576px) {
+  [data-fit-page] {
+    --z0: 0.7254;
+  }
+}
+@container fit (min-width: 592px) {
+  [data-fit-page] {
+    --z0: 0.7456;
+  }
+}
+@container fit (min-width: 608px) {
+  [data-fit-page] {
+    --z0: 0.7657;
+  }
+}
+@container fit (min-width: 624px) {
+  [data-fit-page] {
+    --z0: 0.7859;
+  }
+}
+@container fit (min-width: 640px) {
+  [data-fit-page] {
+    --z0: 0.806;
+  }
+}
+@container fit (min-width: 656px) {
+  [data-fit-page] {
+    --z0: 0.8262;
+  }
+}
+@container fit (min-width: 672px) {
+  [data-fit-page] {
+    --z0: 0.8463;
+  }
+}
+@container fit (min-width: 688px) {
+  [data-fit-page] {
+    --z0: 0.8665;
+  }
+}
+@container fit (min-width: 704px) {
+  [data-fit-page] {
+    --z0: 0.8866;
+  }
+}
+@container fit (min-width: 720px) {
+  [data-fit-page] {
+    --z0: 0.9068;
+  }
+}
+@container fit (min-width: 736px) {
+  [data-fit-page] {
+    --z0: 0.927;
+  }
+}
+@container fit (min-width: 752px) {
+  [data-fit-page] {
+    --z0: 0.9471;
+  }
+}
+@container fit (min-width: 768px) {
+  [data-fit-page] {
+    --z0: 0.9673;
+  }
+}
+@container fit (min-width: 784px) {
+  [data-fit-page] {
+    --z0: 0.9874;
+  }
+}
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    background: white !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  [data-fit] > [data-fit-page] {
+    zoom: 1 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+  .print-bare {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+    background: white !important;
+  }
+  .doc tr {
+    break-inside: avoid;
+  }
+  .doc thead {
+    display: table-header-group;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
