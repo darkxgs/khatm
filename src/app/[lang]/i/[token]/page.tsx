@@ -125,8 +125,8 @@ async function SharedRoute({ params }: PageProps<"/[lang]/i/[token]">) {
                     {S.iban}
                     <CopyButton value={seller.iban} label={t.common.copy} done={t.common.copied} className="-me-2" />
                   </dt>
-                  <dd dir="ltr" className="tnum text-start text-[15px] font-bold tracking-[0.03em] text-ink">
-                    {formatIban(seller.iban)}
+                  <dd className="tnum text-[15px] font-bold tracking-[0.03em] text-ink">
+                    <bdi dir="ltr">{formatIban(seller.iban)}</bdi>
                   </dd>
                 </div>
                 <div>

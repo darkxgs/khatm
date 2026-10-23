@@ -16,7 +16,7 @@ export default async function SignIn({ params }: PageProps<"/[lang]/signin">) {
   const t = dict(lang);
   return (
     <>
-      <SiteHeader lang={lang} altHref={`/${otherLang(lang)}/signin`} demo={false} />
+      <SiteHeader lang={lang} altHref={`/${otherLang(lang)}/signin`} demo={false} signIn={false} />
       <main className="mx-auto max-w-[420px] px-4 pt-8 pb-16 sm:pt-16">
         <h1 className="text-[28px] font-extrabold tracking-[-0.02em]">{t.auth.signInTitle}</h1>
         <div className="mt-6 rounded-panel border border-rule bg-paper p-5 sm:p-6">

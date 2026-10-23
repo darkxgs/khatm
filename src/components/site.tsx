@@ -7,7 +7,7 @@ import { LangLink } from "./lang-link";
 import { buttonClass } from "./ui";
 
 /** The header on public pages: the brand, the other language, sign in, and the demo. */
-export function SiteHeader({ lang, altHref, demo = true }: { lang: Lang; altHref: string; demo?: boolean }) {
+export function SiteHeader({ lang, altHref, demo = true, signIn = true }: { lang: Lang; altHref: string; demo?: boolean; signIn?: boolean }) {
   const t = dict(lang);
   const other = otherLang(lang);
   return (
@@ -15,9 +15,11 @@ export function SiteHeader({ lang, altHref, demo = true }: { lang: Lang; altHref
       <Logo lang={lang} href={`/${lang}`} />
       <nav className="flex items-center gap-1 sm:gap-2" aria-label={t.nav.main}>
         <LangLink to={other} href={altHref} label={t.otherLangName} />
-        <Link href={`/${lang}/signin`} className={buttonClass("ghost", "sm", "hidden sm:inline-flex")}>
-          {t.landing.signIn}
-        </Link>
+        {signIn ? (
+          <Link href={`/${lang}/signin`} className={buttonClass("ghost", "sm", "hidden sm:inline-flex")}>
+            {t.landing.signIn}
+          </Link>
+        ) : null}
         {demo ? <DemoButton lang={lang} label={t.landing.openDemo} size="sm" variant="seal" errors={t.auth.demoErrors} compact /> : null}
       </nav>
     </header>

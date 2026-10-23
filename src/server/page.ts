@@ -18,4 +18,3 @@ export async function appPage(params: Promise<{ lang: string }>) {
   const today = todayIn(account.business.timezone);
   return { lang, t: dict(lang), account, business: account.business, conn, db: conn.db, today };
 }
-

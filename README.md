@@ -4,7 +4,14 @@ Bilingual invoicing for small businesses in Saudi Arabia. Write a tax invoice, a
 
 *Khatm* is the Arabic word for a seal: the round company stamp Saudi businesses press onto their invoices. Every business in Khatm gets one, drawn from its own names and commercial registration number.
 
+![Khatm's home page: a bilingual tax invoice, stamped paid](docs/screenshots/landing.jpg)
+
 **Try it:** "Open the demo" on the home page gives you your own copy of Naqsh, a made-up design studio in Riyadh, with six months of invoicing behind it: paid, part-paid and overdue invoices, a credit note, a zero-rated export to Dubai, quotations and drafts. Record the last payment on an overdue invoice and the paid stamp comes down on the page. Open the customer's link in a private window to see what they see, or paste an invoice's QR text into the checker at `/verify`.
+
+| | |
+|---|---|
+| ![An overdue invoice with its balance, payments and history](docs/screenshots/invoice.jpg) | ![The editor, with the page drawn as you type](docs/screenshots/editor.jpg) |
+| ![The overview in Arabic: what's owed, how late, and six months of sales](docs/screenshots/overview-ar.jpg) | ![The customer's link on a phone, in Arabic](docs/screenshots/share-mobile-ar.jpg) |
 
 ## What it does
 
