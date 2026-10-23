@@ -1,11 +1,12 @@
 import "server-only";
-import { createHash, createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { and, eq, gt, sql } from "drizzle-orm";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getConnection, type Connection } from "@/db";
 import { attempts, businesses, users, type Business, type User } from "@/db/schema";
 import type { Lang } from "@/lib/types";
+import { appKey } from "./keys";
 
 // Accounts are an email and a password (hashed with scrypt); the session is a
 // signed cookie. Demo accounts have no email and expire with their data.
@@ -13,25 +14,18 @@ import type { Lang } from "@/lib/types";
 export const SESSION_COOKIE = "khatm_session";
 const DAY = 86_400_000;
 
-function secret(): string {
-  const s = process.env.AUTH_SECRET;
-  if (s && s.length >= 16) return s;
-  if (process.env.VERCEL_ENV === "production") throw new Error("AUTH_SECRET is not set");
-  return "khatm-local-development-secret";
-}
+const sign = async (payload: string) => createHmac("sha256", await appKey("session")).update(payload).digest("base64url");
 
-const sign = (payload: string) => createHmac("sha256", secret()).update(payload).digest("base64url");
-
-export function sessionToken(uid: string, exp: number): string {
+export async function sessionToken(uid: string, exp: number): Promise<string> {
   const payload = Buffer.from(JSON.stringify({ uid, exp })).toString("base64url");
-  return `${payload}.${sign(payload)}`;
+  return `${payload}.${await sign(payload)}`;
 }
 
-export function readSessionToken(token: string | undefined): { uid: string; exp: number } | null {
+export async function readSessionToken(token: string | undefined): Promise<{ uid: string; exp: number } | null> {
   if (!token) return null;
   const [payload, mac] = token.split(".");
   if (!payload || !mac) return null;
-  const want = Buffer.from(sign(payload));
+  const want = Buffer.from(await sign(payload));
   const got = Buffer.from(mac);
   if (want.length !== got.length || !timingSafeEqual(want, got)) return null;
   try {
@@ -44,7 +38,7 @@ export function readSessionToken(token: string | undefined): { uid: string; exp:
 
 export async function startSession(u: Pick<User, "id" | "expiresAt">) {
   const exp = u.expiresAt ? u.expiresAt.getTime() : Date.now() + 30 * DAY;
-  (await cookies()).set(SESSION_COOKIE, sessionToken(u.id, exp), {
+  (await cookies()).set(SESSION_COOKIE, await sessionToken(u.id, exp), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -61,7 +55,7 @@ export type Account = { user: User; business: Business };
 
 /** The signed-in user and their business, or null. Expired demos count as signed out. */
 export async function currentAccount(conn?: Connection): Promise<Account | null> {
-  const t = readSessionToken((await cookies()).get(SESSION_COOKIE)?.value);
+  const t = await readSessionToken((await cookies()).get(SESSION_COOKIE)?.value);
   if (!t) return null;
   const c = conn ?? (await getConnection());
   const [row] = await c.db.select({ user: users, business: businesses }).from(users).innerJoin(businesses, eq(businesses.ownerId, users.id)).where(eq(users.id, t.uid));
@@ -77,13 +71,11 @@ export async function requireAccount(lang: Lang, conn?: Connection): Promise<Acc
   return a;
 }
 
+/** The visitor's address, keyed and hashed for rate limits; the address itself is never stored. */
 export async function clientIpHash(): Promise<string> {
   const h = await headers();
   const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "local";
-  return createHash("sha256")
-    .update(`${process.env.RATE_SALT ?? secret()}:${ip}`)
-    .digest("hex")
-    .slice(0, 32);
+  return createHmac("sha256", await appKey("rate")).update(ip).digest("hex").slice(0, 32);
 }
 
 /** Counts an attempt against a sliding window; false when the limit is reached. */

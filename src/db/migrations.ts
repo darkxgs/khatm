@@ -172,4 +172,15 @@ CREATE TABLE khatm.app_jobs (
 );
 `,
   },
+  {
+    // Keys the app makes for itself when AUTH_SECRET or RATE_SALT isn't set.
+    name: "002_app_keys",
+    sql: `
+CREATE TABLE khatm.app_keys (
+  name text PRIMARY KEY,
+  value text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+`,
+  },
 ];

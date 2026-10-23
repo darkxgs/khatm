@@ -83,7 +83,7 @@ return toBase64(Uint8Array.from(parts));
 
 **Share links are private by construction.** Each link is a 22-character random token, served with `Referrer-Policy: no-referrer` and `X-Robots-Tag: noindex`. Opening it records the first view, except when the business itself is the one looking.
 
-**Accounts.** Passwords are hashed with scrypt and sessions are HMAC-signed cookies. Sign-in is rate-limited per visitor and per email, sign-up and the demo per visitor, and every query and action is scoped to the signed-in business.
+**Accounts.** Passwords are hashed with scrypt and sessions are HMAC-signed cookies. The signing key is `AUTH_SECRET` when it's set; otherwise Khatm makes a random key the first time it needs one and keeps it in the database, so a fresh deployment needs no secrets and never signs with anything guessable. Sign-in is rate-limited per visitor and per email, sign-up and the demo per visitor, and every query and action is scoped to the signed-in business.
 
 **A demo for every visitor.** "Open the demo" builds Naqsh for you in one transaction, issuing six months of backdated documents through the same code paths as the app (so numbers, QR codes and totals are real), and the account is deleted with everything in it after a day.
 

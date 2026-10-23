@@ -11,6 +11,9 @@ import { cleanup, createDemoAccount } from "@/server/demo";
 import { convertQuote, issue, recordPayment, saveDraft, startCreditNote, deletePayment, duplicate, type LineIn } from "@/server/docs";
 import { dashboard, documentByToken, documentDetail, listDocuments, summaryOf, vatReturn } from "@/server/queries";
 import { markViewed } from "@/server/docs";
+import { readSessionToken, sessionToken } from "@/server/auth";
+import { appKey } from "@/server/keys";
+import { rawQuery } from "@/db/raw";
 
 let conn: Connection;
 const TZ = "Asia/Riyadh";
@@ -352,5 +355,26 @@ describe("cleanup", () => {
     expect(await conn.db.select().from(s.users).where(eq(s.users.id, user.id))).toHaveLength(0);
     expect(await conn.db.select().from(s.documents).where(eq(s.documents.businessId, business.id))).toHaveLength(0);
     expect(await conn.db.select().from(s.payments).where(eq(s.payments.businessId, business.id))).toHaveLength(0);
+  });
+});
+
+describe("keys and sessions", () => {
+  it("makes its own keys once, keeps them in the database, and signs sessions with them", async () => {
+    const session = await appKey("session");
+    expect(session.length).toBeGreaterThanOrEqual(40);
+    expect(await appKey("session")).toBe(session);
+    expect(await appKey("rate")).not.toBe(session);
+    const rows = await rawQuery<{ name: string; value: string }>(conn.raw, `SELECT name, value FROM khatm.app_keys ORDER BY name`);
+    expect(rows.map((r) => r.name)).toEqual(["rate", "session"]);
+    expect(rows.find((r) => r.name === "session")!.value).toBe(session);
+
+    const exp = Date.now() + 60_000;
+    const token = await sessionToken("usr_1", exp);
+    expect(await readSessionToken(token)).toEqual({ uid: "usr_1", exp });
+    const [payload, mac] = token.split(".");
+    const forged = Buffer.from(JSON.stringify({ uid: "usr_2", exp })).toString("base64url");
+    expect(await readSessionToken(`${forged}.${mac}`)).toBeNull();
+    expect(await readSessionToken(`${payload}.${mac.slice(0, -2)}xx`)).toBeNull();
+    expect(await readSessionToken(await sessionToken("usr_1", Date.now() - 1000))).toBeNull();
   });
 });
